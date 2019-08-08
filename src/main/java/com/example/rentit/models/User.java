@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import java.util.Set;
 import javax.validation.constraints.*;
 
 @Entity
@@ -11,7 +12,7 @@ import javax.validation.constraints.*;
 public class User extends AuditModel
 {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, name = "email")
@@ -36,13 +37,46 @@ public class User extends AuditModel
     @NotBlank
     private boolean status;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "permissions", 
+        joinColumns = @JoinColumn(
+            name = "user_id", 
+            referencedColumnName = "id"
+        ), 
+        inverseJoinColumns = @JoinColumn(
+            name = "role_id", 
+            referencedColumnName = "id"
+        )
+    )
+    private Set<Role> roles;
+
+    public User() {
+        //
+    }
+
+    public User(String email, String first_name, String surname, String password, boolean status) {
+        this.email = email;
+        this.first_name = first_name;
+        this.surname = surname;
+        this.password = password;
+        this.status = status;
+    }
+
+    public User(String email, String first_name, String surname, Set<Role> roles) {
+        this.email = email;
+        this.first_name = first_name;
+        this.surname = surname;
+        this.roles = roles;
+    }
+
     //Falta agregar las relaciones del modelo
 
     public Long getId() {
         return id;
     }
 
-    public void setId() {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -50,7 +84,7 @@ public class User extends AuditModel
         return email;
     }
 
-    public void setEmail() {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -58,7 +92,7 @@ public class User extends AuditModel
         return first_name;
     }
 
-    public void setFirstname() {
+    public void setFirstname(String first_name) {
         this.first_name = first_name;
     }
 
@@ -66,7 +100,7 @@ public class User extends AuditModel
         return surname;
     }
 
-    public void setSurname() {
+    public void setSurname(String surname) {
         this.surname = surname;
     }
 
@@ -74,7 +108,7 @@ public class User extends AuditModel
         return password;
     }
 
-    public void setPassword() {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -82,7 +116,15 @@ public class User extends AuditModel
         return status;
     }
 
-    public void setStatus() {
+    public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

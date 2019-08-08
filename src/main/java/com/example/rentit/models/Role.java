@@ -2,30 +2,51 @@ package com.example.rentit.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import javax.validation.constraints.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
 public class Role extends AuditModel
 {
+    public Role() {
+        //
+    }
+
+    public Role(String name, boolean status) {
+        this.name = name;
+        this.status = status;
+    }
+
+    public Role(String name, boolean status, Set<User> users) {
+        this.name = name;
+        this.users = users;
+        this.status = status;
+    }
+
     @Id
     @GeneratedValue
     private Long id;
 
-    @NotBlank
+    @NotNull
     @Size(min = 3, max = 30)
     private String name;
 
-    @NotBlank
+    @NotNull
     private boolean status;
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users;
 
     public Long getId() {
         return id;
     }
 
-    public void setId() {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -33,7 +54,7 @@ public class Role extends AuditModel
         return name;
     }
 
-    public void setName() {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -41,7 +62,15 @@ public class Role extends AuditModel
         return status;
     }
 
-    public void setStatus() {
+    public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }
